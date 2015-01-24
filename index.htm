@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="et" lang="en">
+	<head>
+	<title>MemoryMaze - Memory game to match up similar pair of blocks</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<META NAME="author" CONTENT="Arun David, Boobalan">
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<META NAME="description" CONTENT="Memory Maze is a small game to match up similar pair of blocks as quick as you can.">
+
+	<script src='jquery.min.js' type='text/javascript' language='javascript'></script>
+		
+	<script language='javascript'>
+		var order=[0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7];
+		
+		shuffle = function(o){
+			for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+			return o;
+		};
+		function loadFunc(){
+			order=shuffle(order);
+			for(var i=0;i<16;i++){
+				$('#ad_gameouter').html($('#ad_gameouter').html()+"<div class='ad_blockouter'><img src='images/"+order[i]+".png' class='ad_image'/><img src='images/block.png' class='ad_block' id='ad_block"+i+"' onclick='openBlock("+i+");'/></div>");
+			}
+		}
+		function closeBlocks(){
+				$('.ad_block').fadeOut('slow');
+				setTimeout("$('.ad_block').fadeIn('slow');",2000);
+		}
+		var clickno=1,openedid,blocktemp,enabled=1,completecount=0;
+		function openBlock(blockid){
+		if(appStarted==1&&enabled==1){
+			blocktemp=blockid;
+			if(clickno==1){
+				$("#ad_block"+blockid).hide(500);
+				openedid=blockid;
+				clickno=2;
+			}else{
+				if(order[blockid]==order[openedid]){
+					$("#ad_block"+blockid).hide(500);
+					completecount++;
+					if(completecount==8){
+						stopApp();
+						stopTimer();
+					}
+				}else{
+					$("#ad_block"+blockid).hide(500);
+					enabled=0
+					setTimeout("$('#ad_block'+blocktemp).show(300);$('#ad_block'+openedid).show(300);enabled=1;",300);
+				}
+				clickno=1;
+			}
+		}
+		}
+		var appStarted=false;
+		var appCompleted=false;
+		var currentKey=97;
+		var timer=0;
+		var runTimer=false;
+		function startApp(){
+			if(appCompleted==false){
+				startCountdown();
+			}
+		}
+		var countdown=3;
+		function startCountdown(){
+			if(countdown==0){
+				$('#timer').html("Started");
+				closeBlocks();
+				setTimeout("appStarted=true;runTimer=true;startTimer();",2000);
+			}else{
+				$('#timer').html(countdown+"");
+				countdown--;
+				setTimeout("startCountdown();",1000);
+			}
+		}
+		function stopApp(){
+			appCompleted=true;
+			$('#ad_completed').html("<div class='section'>Completed !. Your time is "+$('#timer').html()+" seconds.<br/><a href='http://demo.tinywall.net/memorymaze/'>Click here</a> to retry.</div>");
+			setTimeout("ksPostStatus('"+$('#timer').html()+"');",2000);
+		}
+		var sec=0,milsec=0;
+		function startTimer(){
+			if(runTimer==true){
+				if(milsec==100){
+					milsec=0;
+					sec++;
+				}
+				$('#timer').html(zeroPad(sec,2)+"."+zeroPad(milsec,2));
+				milsec++;
+				setTimeout("startTimer()",10);
+			}
+		}
+		function zeroPad(num,count)
+		{
+			var numZeropad = num + '';
+			while(numZeropad.length < count) {
+			numZeropad = "0" + numZeropad;
+			}
+			return numZeropad;
+		}
+		function stopTimer(){
+			runTimer=false;
+		}
+	</script>
+	<style type="text/css">
+		#ad_container{
+			width:600px;
+			margin: 0 auto;
+		}
+		#ad_startbutton{
+			cursor:pointer;
+			margin-top:10px;
+		}
+		
+		#ad_logocaption{
+			position:absolute;
+			top:80px;
+			left:210px;
+			color:#787878;
+		}
+		.clear{
+		clear:both;
+		}
+		#ad_gameouter{
+			width:300px;
+			height:300px;
+			
+			margin-left:150px;
+			margin-top:30px;
+		}
+		.ad_blockouter{
+			width:75px;
+			height:75px;
+			float:left;
+			
+		}
+		.ad_image{
+			position:absolute;
+		}
+		.ad_block{
+			position:absolute;
+			cursor:pointer;
+		}
+		#timer{
+			text-align:center;
+			font-size:30px;
+			color: #AE5F48;
+			margin-top: 10px;
+		}
+		#ad_completed{
+			text-align:center;
+			font-size:23px;
+			margin-top:10px;
+			color:#AE5F48;
+		}
+		#ad_completed a{
+			text-align:center;
+			font-size:23px;
+			margin-top:10px;
+			color:#AE5F48;
+		}
+		body{
+			margin: 80px 0;
+			background: rgba(174, 95, 72, 0.15);
+			font-family: arial;
+			padding-top: 0px;
+			font:"Helvetica Neue", Arial, sans-serif;
+		}
+		.container {
+			width: 800px;
+			margin: 0 auto;
+		}
+		.header{
+			text-align: center;
+		}
+		h1.title  {
+			font-size: 50px;
+			font-weight: bold;
+			color: #AE5F48;
+			margin: 0px;
+		}
+		h5.description{
+			margin-bottom: 0px;
+			font-weight: normal;
+			font-size: 14px;
+			color: #999;
+		}
+		.start-button {
+			display: inline-block;
+			background: #AE5F48;
+			border-radius: 3px;
+			margin-top: 10px;
+			padding: 0 20px;
+			color: #f9f6f2;
+			height: 40px;
+			line-height: 42px;
+			cursor: pointer;
+			text-align: center;
+		}
+		.section {
+			background: #ffffff;
+			border: 1px solid #dddddd;
+			margin-top: 20px;margin-bottom: 20px;
+			padding: 20px;
+		}
+		.subtitle{
+			font-size: 20px;
+			font-weight: bold;
+			color: #AE5F48;
+			margin-top: 0;
+		}
+		.share{
+			margin-top: 30px;
+			text-align: center;
+		}
+		.fb-share{
+			width: 150px;float: left;
+		}
+	</style>
+	</head>
+	<body onload="loadFunc()">
+	<div style="position:fixed;top:0px;left:0px;width:0;height:0;" id="memorymaze"></div>
+	<a href="https://github.com/tinywall/memorymaze/">
+	<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub">
+	</a>
+		<div class="container">
+			<div class="header">
+				<h1 class="title">MemoryMaze</h1>
+				<h5 class="description">Small game to test your memory. Wanna try?<br><br>Match up similar pair of block as fast as possible.</h5>
+			</div>
+			<div id='ad_container'>	
+				<div id="ad_gameouter"></div>
+				<div align="center">
+					<div class="start-button" onclick='startApp();$(this).hide();'>Start Game</div>
+				</div>
+				<div id='timer'></div>
+				<div id='ad_completed'></div>
+			</div>
+			<div class="share">
+            <iframe id="twitter-widget-0" scrolling="no" frameborder="0" allowtransparency="true" src="http://platform.twitter.com/widgets/tweet_button.b68aed79dd9ad79554bcd8c9141c94c8.en.html#_=1422083166538&amp;count=horizontal&amp;dnt=false&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=http%3A%2F%2Fdemo.tinywall.net%2Fmemorymaze%2F&amp;size=m&amp;text=Scroll%20Zip%20jQuery%20plugin%20%2F%20Tinywall&amp;url=http%3A%2F%2Fdemo.tinywall.net%2Fmemorymaze%2F&amp;via=tinywallinfo" class="twitter-share-button twitter-tweet-button twitter-share-button twitter-count-horizontal" title="Twitter Tweet Button" data-twttr-rendered="true" style="width: 107px; height: 20px;"></iframe>
+			<script>
+			!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+			</script>&nbsp;&nbsp;&nbsp;
+            <iframe id="twitter-widget-2" scrolling="no" frameborder="0" allowtransparency="true" src="http://platform.twitter.com/widgets/follow_button.df71e9fd75415d2cee8cfded99ebe79f.en.html#_=1422083166542&amp;dnt=false&amp;id=twitter-widget-2&amp;lang=en&amp;screen_name=tinywallinfo&amp;show_count=false&amp;show_screen_name=true&amp;size=m" class="twitter-follow-button twitter-follow-button" title="Twitter Follow Button" data-twttr-rendered="true" style="width: 136px; height: 20px;"></iframe>
+			<script>
+			!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+			</script>
+			<div class='fb-share'>
+			<div id="fb-root"></div>
+			<script>(function(d, s, id) {
+			  var js, fjs = d.getElementsByTagName(s)[0];
+			  if (d.getElementById(id)) return;
+			  js = d.createElement(s); js.id = id;
+			  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=534047313395875&version=v2.0";
+			  fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));</script>
+			<div class="fb-like" data-href="http://demo.tinywall.net/memorymaze/" data-width="100" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
+        	</div>
+        	<iframe src="http://ghbtns.com/github-btn.html?user=tinywall&amp;repo=memorymaze&amp;type=watch&amp;count=true" height="30" width="118" frameborder="0" scrolling="0" style="width:118px; height: 21px;margin-left:25px;" allowtransparency="true"></iframe>
+        </div>
+			<div style='clear:both;'></div>
+			<div class="section section1 scrollzip isShown animated bounceInLeft" style="visibility: visible;"><h2 class="subtitle">Memory Maze</h2>
+			    It is a simple time passer and brain challenger. In this game, you have to match up similar pair of blocks as quick as you can.
+                <div class="clear"></div>
+                <br>
+                Memory Maze is developed by <a href="http://twitter.com/arndvd" target='_blank'>Arun David</a> &amp; <a href="http://twitter.com/trendchaser4u" target='_blank'>Boobalan</a> in the <a href="http://www.doparttime.com" target='_blank'>DoPartTime.com</a> team.
+    </div>
+		</div>
+	</body>
+</html>
